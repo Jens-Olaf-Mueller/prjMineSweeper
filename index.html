@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mine Sweeper</title>
+        <link rel="stylesheet" href="./style/main.css">
+        <link rel="stylesheet" href="./style/dropdown.css">
+        <link rel="stylesheet" href="./style/fonts.css" type="text/css" charset="utf-8">
+
+        <script src="./js/timer.class.js"></script>
+        <script defer src="./js/main.js"></script>        
+    </head>
+
+    <body>
+        <main>
+            <header class="header">
+                <div class="logo"></div>
+            </header>
+
+            <div class="playground">
+                <aside class="settings">
+                    <div id="divClock" class="timer">
+                        <img src="./img/icons/Clock.png" alt="">
+                        <p id="txtTimer" class="time">00:00</p>
+                    </div>
+
+                    <div id="divButtonSettings" class="control btn-style">Settings...</div>
+
+                    <div id="divDropdown" class="slide-out">  
+                        <div class="control">
+                            <label for="inpLevel" class="small">Level</label>
+                            <div class="unit">
+                                <input id="inpLevel" class="slider large" type="range" min="0" max="3" value="0">
+                                <label id="lblLevel">easy</label>
+                            </div>                         
+                        </div>                      
+                        <div class="control">
+                            <label for="inpCountdown">Countdown</label>
+                            <div class="unit">
+                                <input id="inpCountdown" class="slider switch" type="range" min="0" max="60" step="10" value="0">
+                                <label id="lblCountdown">off</label> 
+                            </div>                        
+                        </div>    
+                        <div class="control">
+                            <label for="inpDebugger">Debugmode</label>
+                            <div class="unit">
+                                <input id="inpDebugger" class="slider switch" type="range" min="0" max="1" value="0">
+                                <label id="lblDebugger">off</label> 
+                            </div>                        
+                        </div>
+                    </div>
+                </aside>
+                <div class="board-table">
+                    <div id="divBoard" class="board"> </div> 
+                </div>                
+            </div> 
+        </main>
+    </body>
+</html>

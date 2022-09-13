@@ -1,0 +1,201 @@
+:root {
+    --bg-green: green;  /* #f9ca24; #ffa600;*/
+    --brd-color: green;
+    --bg-lime: limegreen;
+    --shadow: 10px 10px 8px green;
+    --logo-height: 3rem;
+    --fld-size: 48px;
+}
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Nerko One', Verdana;
+    font-size: xx-large;
+    text-shadow: 8px 4px 4px var(--bg-green);
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-image: url('../img/background/full-bg.png');
+    background-position: top;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+header { 
+    width: 100vw;
+}
+
+header .logo {
+    height: var(--logo-height);
+    margin: 1rem 0;
+    background-image: url('../img/icons/title.png');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.playground {
+    display: flex;
+    /* gap: 1rem; */
+    height: calc(100% - var(--logo-height) - 3rem); /* 2 x margin 1rem + 1 x margin-bottom 1rem*/
+}
+
+.settings {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0 1rem;
+    width: 30%;
+}
+
+.timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: var(--shadow);
+    border-radius: 8px;
+}
+
+.timer img {
+    width: 3rem;
+}
+
+.slider {
+    -webkit-appearance: none;
+    height: 0.66rem;
+    max-width: 1.5rem;
+    cursor: pointer;
+    background: var(--bg-lime);
+    outline: none;
+    border: 2px solid var(--brd-color);
+    border-radius: 10px;  
+}
+.switch {max-width: 1.5rem;}
+/* for chrome/safari */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--bg-green);
+    cursor: pointer;
+    border: 2px solid var(--brd-color);
+    border-radius: 50%;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    background: lime;
+}
+.board-table {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    margin-right: 1rem;
+    /* box-shadow: var(--shadow); */
+    border-radius: 8px;
+    /* background: white; */
+}
+
+.board {    
+    display: grid;
+    height: 100%;  
+    box-shadow: var(--shadow);  
+    /* background-color: #666; */
+}
+
+.field {
+    /* position: absolute; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: var(--fld-size);
+    width: var(--fld-size);
+    background-image: url('../img/buttons/field0.png');
+    background-size: cover;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.field:hover {
+    filter: brightness(1.25);
+}
+
+.revealed {
+    background-image: url('../img/buttons/revealed.png');
+}
+
+.field1 {background-image: url('../img/buttons/field1.png');}
+.field2 {background-image: url('../img/buttons/field2.png');}
+.field3 {background-image: url('../img/buttons/field3.png');}
+.field4 {background-image: url('../img/buttons/field4.png');}
+.field5 {background-image: url('../img/buttons/field5.png');}
+.field6 {background-image: url('../img/buttons/field6.png');}
+.field7 {background-image: url('../img/buttons/field7.png');}
+.field8 {background-image: url('../img/buttons/field8.png');}
+
+.bang {background-image: url('../img/buttons/bang.png');}
+.mine {background-image: url('../img/buttons/mine.png');}
+.flag {background-image: url('../img/buttons/flag.png');}
+
+.control {
+    margin-top: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    box-shadow: var(--shadow);
+    border-radius: 8px;
+}
+
+.control>label {min-width: 4.5rem;}
+.control>label.small {min-width: 2.5rem;}
+.large {
+    max-width: 2.5rem;
+}
+
+.control .unit {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.btn-style {
+    justify-content: center;
+    cursor: pointer;
+}
+
+.btn-style:hover, .control:hover {background-color: lime;}
+
+.debugging {
+    /* filter: grayscale(50%);   */
+    filter: sepia(1);  
+}
+
+.debugging:hover {filter: hue-rotate(270deg);}
+
+/* ################################################################################### */
+@media (max-width: 1200px) {    
+    .settings {
+        min-width: 30%;
+    }
+    .control {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* .large {
+        max-width: 2.5rem;
+    } */
+    .unit {
+        width: 100%;
+    }
+}
+
+@media (max-width: 840px) {
+    * {font-size: x-large;}
+}
