@@ -117,6 +117,7 @@ function createBoard(rows, cols) {
 }
 
 function renderBoard(withEvents = true) {
+    const fieldSize = getFieldSize(rows);
     board.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
     board.innerHTML = '';
     for (let i = 0; i < arrFields.length; i++) {
