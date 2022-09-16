@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="./style/fonts.css" type="text/css" charset="utf-8">
 
         <script src="./js/timer.class.js"></script>
+        <script src="./js/field.class.js"></script>
         <script defer src="./js/main.js"></script>        
     </head>
 
@@ -23,7 +24,12 @@
                 <aside class="settings">
                     <div id="divClock" class="timer">
                         <img src="./img/icons/Clock.png" alt="">
-                        <p id="txtTimer" class="time">00:00</p>
+                        <div id="divStatus">
+                            <!-- <p id="txtCountDown" class="time">00:00</p> -->
+                            <!-- <p id="txtClock" class="time">00:00</p> -->
+                            <p id="txtTimer" class="time">00:00</p>
+                            <p id="txtClicks">0</p>
+                        </div>                        
                     </div>
 
                     <div id="divButtonSettings" class="control btn-style">Settings...</div>

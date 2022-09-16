@@ -64,6 +64,12 @@ header .logo {
     width: 3rem;
 }
 
+#divStatus {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
 .slider {
     -webkit-appearance: none;
     height: 0.66rem;
@@ -110,6 +116,7 @@ header .logo {
 
 .field {
     /* position: absolute; */
+    font-size: large;
     display: flex;
     justify-content: center;
     align-items: center;

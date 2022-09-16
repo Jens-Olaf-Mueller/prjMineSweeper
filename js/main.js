@@ -1,4 +1,4 @@
-let arrFields = [], arrLevel = ['easy', 'medium', 'hard', 'insane'],
+let arrFields = [], arrLevel = ['easy', 'medium', 'hard', 'insane'], arrClassFields =[],
     level = 0, rows = 9, columns = 9, countdown = 0, clicks = 0, mainInterval,
     debugMode = false, gameOver,
     gameTimer = new Timer('txtTimer');
@@ -12,11 +12,8 @@ const btnSettings = document.getElementById('divButtonSettings');
 const dropDown = document.getElementById('divDropdown');
 const btnNew = document.getElementById('divClock');
 const clock = document.getElementById('txtTimer');
+const txtClicks = document.getElementById('txtClicks');
 const rootCSS = document.querySelector(':root'); 
-
-function setCSSVar(variable = '--fld-size', value) {
-    rootCSS.style.setProperty(variable, `${value}px`);
-}
 
 init();
 
@@ -25,6 +22,7 @@ function init() {
     clicks = 0;
     btnNew.setAttribute('class', 'timer');
     clock.innerText = '00:00';
+    txtClicks.innerText = 0;
     installEventListeners();
     createBoard(rows, columns);
 }
@@ -35,22 +33,42 @@ btnSettings.addEventListener('click', () => {
 });
 
 function installEventListeners() {
-    document.addEventListener('timeout', ()=>{
-        gameOver = true;
-        // alert('TIME OUT - GAME OVER !!!')
+    document.addEventListener('timeout', (evt) => {        
+        // console.log('Event', evt)
+        // debugger
+        alert('TIME OUT - GAME OVER !!!')
+        gameOver = true;        
     })   
+
+    document.addEventListener('timerexpired', (evt) => {        
+        // console.log('Event', evt)
+        // debugger
+        alert('ALARMZEIT ERREICHT !!!')     
+    })   
+    
+    mainInterval = setInterval(() => {
+        if (gameOver) {
+            mainInterval = clearInterval(mainInterval);
+            gameTimer.stop();
+            revealBoard();
+            renderBoard(false);           
+            clock.innerText = 'New game';
+            btnNew.setAttribute('class', 'timer btn-style');
+            btnNew.addEventListener('click', init, {once : true});
+        }
+    }, 333);
+
     chkCountdown.oninput = function() {
         countdown = parseInt(this.value);
         let value = countdown == 0 ? 'off' : countdown + ' sec';
         document.getElementById('lblCountdown').innerText = value;
     }    
     chkDebug.oninput = function() {
-        debugMode = +this.value;
+        debugMode =  parseInt(this.value);
         document.getElementById('lblDebugger').innerText = debugMode ? 'on' : 'off';
         renderBoard();
     }
     sldLevel.oninput = function() {
-        // board.style.flex = '1';
         level = parseInt(this.value);
         document.getElementById('lblLevel').innerText = ' ' + arrLevel[level];
         switch (level) {
@@ -73,29 +91,16 @@ function installEventListeners() {
         }
         if (!gameOver) createBoard(rows, columns);
     } 
-
-    mainInterval = setInterval(() => {
-        if (gameOver) {
-            mainInterval = clearInterval(mainInterval);
-            gameTimer.stop();
-            revealBoard();
-            renderBoard(false);           
-            clock.innerText = 'New game';
-            btnNew.setAttribute('class', 'timer btn-style');
-            btnNew.addEventListener('click', init, {once : true});
-        }
-    }, 333);
 }
 
 function createBoard(rows, cols) {
     arrFields = [];
     const fldSize = getFieldSize(rows); 
-    setCSSVar('--fld-size',fldSize);   
+    rootCSS.style.setProperty('--fld-size', `${fldSize}px`);
+    // setCSSVar('--fld-size',fldSize);   
     for (let x = 0; x < rows; x++) {
         for (let y = 0; y < cols; y++) {
             arrFields.push({
-                // top: Math.round((x % rows) * fldSize),
-                // left: Math.round((y % cols) * fldSize),
                 index: x * rows + y,
                 border: {
                         top: x % rows == 0,
@@ -103,13 +108,14 @@ function createBoard(rows, cols) {
                         right: (y+1)% cols == 0,
                         bottom: (x+1)% rows == 0
                       },
-                // isBorder: (x % size == 0 || y == 0 || (y+1)% size == 0 || (x+1)% size == 0),
                 revealed: false,
                 hasBomb: false,
                 exploded: false,
                 neighbours: 0,
                 hasFlag: false,
             }); 
+
+            arrClassFields.push(new Field(rows,cols,x,y));
         }     
     }        
     setBombs();
@@ -117,29 +123,26 @@ function createBoard(rows, cols) {
 }
 
 function renderBoard(withEvents = true) {
-    const fieldSize = getFieldSize(rows);
     board.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
     board.innerHTML = '';
     for (let i = 0; i < arrFields.length; i++) {
-        const currFld = arrFields[i], id = `fld-${i}`;
+        const id = `fld-${i}`;
         board.innerHTML += `<div id="${id}" class="field" data-index="${i}"> </div>`;      
-        drawField(id, currFld, fieldSize); // set the field's position in board
+        drawField(id, arrFields[i]); // set the field's position in board
+        // debugger    
+        // board.innerHTML += arrClassFields[i].htmlElement.outerHTML; 
+
     }
     if (withEvents) setEventListeners();
 }
 
 /**
  * helper function for 'renderBoard'
- * @param {object} fldHTML the HTML field
- * @param {object} fld object from array 'arrFields'
- * @param {number} size lenght of a field in the parent container
+ * @param {string} id of the correspondending html element
+ * @param {object} fld current array item
  */
- function drawField(id, fld, size) {
+ function drawField(id, fld) {
     const fldHTML = document.getElementById(id);
-    // fldHTML.style.top = fld.top + 'px';
-    // fldHTML.style.left = fld.left + 'px';
-    // fldHTML.style.height = size + 'px';
-    // fldHTML.style.width = size + 'px';
     if (fld.revealed) {
         fldHTML.classList.add('revealed');
         if (fld.neighbours) fldHTML.classList.add(`field${fld.neighbours}`);
@@ -186,6 +189,7 @@ function getFieldSize(rows) {
 function fieldClicked(index) {
     revealField(index);
     clicks++;
+    txtClicks.innerText = clicks;
     if (clicks == 1) {
         gameTimer.start();
         dropDown.setAttribute('class', 'slide-out');
@@ -267,3 +271,7 @@ function playSound(file) {
     let sound = new Audio(file);
     sound.play();
 }
+
+// function setCSSVar(variable = '--fld-size', value) {
+//     rootCSS.style.setProperty(variable, `${value}px`);
+// }
