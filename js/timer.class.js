@@ -169,7 +169,7 @@ class Timer {
                 this.seconds--;
                 if (!this.timerID && this.htmlElement) this.htmlElement.innerText = this.#getCountDown();
                 if (soundEnabled && this.seconds > 0 && this.seconds < 4 && !SND_CLOCK.ended) SND_CLOCK.play();
-                if (this.seconds <= 0) { 
+                if (this.seconds <= 0) {                     
                     this.#stopCountDown();
                     document.dispatchEvent(new Event(TIMEOUT)); // raise timeout event
                 }

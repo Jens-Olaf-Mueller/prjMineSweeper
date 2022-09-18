@@ -2,6 +2,10 @@ class Board {
     arrFields = [];
     boardParentHTML = undefined;
     htmlBoard = undefined;
+    size;
+    bombs;
+    fieldsRevealed;
+    flagsRemaining;
     debugMode;
     #rows;
     #cols;
@@ -18,7 +22,7 @@ class Board {
      * Creates a new HTML-board in the provided parent container (--> constructor).
      * If there is an existing board already, this step is skipped.
      * Then a new array of Fields is created depending on the rows and columns.
-     * @param {number} rows the number of rows in the new board
+     * @param {number} rows number of rows in the new board
      * @param {number} cols number of columns in the board
      */
     create(rows, cols) {
@@ -35,6 +39,7 @@ class Board {
                 this.arrFields.push(field);
             }
         }
+        this.size = this.arrFields.length;
         this.#setBombs();
         this.refresh();
         if (debugMode) console.log('Fields: ', this.arrFields);
@@ -48,19 +53,22 @@ class Board {
      */
     refresh() {
         this.htmlBoard.innerHTML = '';
+        this.fieldsRevealed = 0;
         for (let i = 0; i < this.arrFields.length; i++) {
             const fld = this.arrFields[i];
             this.htmlBoard.appendChild(fld.htmlElement);           
             fld.toggleClass('flag', fld.hasFlag);            
             if (fld.hasBomb) fld.toggleClass('debugging', this.debugMode);
             if (fld.revealed) {
+                this.fieldsRevealed++;
                 fld.toggleClass('revealed', true);
                 if (fld.bombsNearby) fld.toggleClass('field'+fld.bombsNearby, true);
                 if (fld.hasBomb) fld.toggleClass('mine', true);
                 if (fld.exploded) fld.toggleClass('bang', true);
-                if (fld.hasFlag && !fld.hasBomb) fld.toggleClass('flagwrong', true);                
+                if (fld.hasFlag && !fld.hasBomb) fld.toggleClass('flagwrong', true);                                
             }                                   
         }
+        this.#setFieldSize();
     }
 
 
@@ -73,7 +81,7 @@ class Board {
         this.htmlBoard.innerHTML = '';
         this.htmlBoard.style.gridTemplateColumns = `repeat(${this.#cols}, 1fr)`;
         this.arrFields = [];
-        document.querySelector(':root').style.setProperty('--fld-size', `${this.#getFieldSize(this.#rows)}px`);
+        this.#setFieldSize();
     }
 
 
@@ -111,14 +119,16 @@ class Board {
      * Private method to place the bombs in the new created field
      */
     #setBombs() {
-        let z = 0, bombs = parseInt(this.#rows * this.#cols * BOMBS_PERCENT);
+        let z = 0;
+        this.bombs = parseInt(this.#rows * this.#cols * BOMBS_PERCENT);
+        this.flagsRemaining = this.bombs;
         do {
             const fld = parseInt(Math.random() * this.arrFields.length);
             if (this.arrFields[fld].hasBomb == false) {
                 this.arrFields[fld].hasBomb = true;
                 z++;
             }
-        } while (z < bombs);
+        } while (z < this.bombs);
         this.#countBombNeighbours();
     }
 
@@ -185,5 +195,13 @@ class Board {
      */
     #getFieldSize(rows) {
         return this.htmlBoard.clientHeight / rows;
+    }
+
+
+    /**
+     * Private method to set the board's field size in CSS
+     */
+    #setFieldSize() {
+        document.querySelector(':root').style.setProperty('--fld-size', `${this.#getFieldSize(this.#rows)}px`);
     }
 }

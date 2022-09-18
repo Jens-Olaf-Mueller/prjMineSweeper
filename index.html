@@ -5,6 +5,8 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Mine Sweeper</title>
+
+        <link rel="icon" type="image/x-icon" href="./img/icons/Mine.jpg">
         <link rel="stylesheet" href="./style/main.css">
         <link rel="stylesheet" href="./style/dropdown.css">
         <link rel="stylesheet" href="./style/fonts.css" type="text/css" charset="utf-8">
@@ -24,18 +26,21 @@
             <div class="playground">
                 <aside class="settings">
                     <div id="divClock" class="timer">
-                        <img src="./img/icons/Clock.png" alt="">
+                        <img src="./img/icons/Clock.png">
                         <div id="divStatus">
                             <!-- <p id="txtCountDown" class="time">00:00</p> -->
-                            <!-- <p id="txtClock" class="time">00:00</p> -->
+                            <div class="icon-flag">
+                                <img src="./img/icons/Flag.png">
+                                <p id="txtFlags">0</p>
+                            </div>                            
                             <p id="txtTimer" class="time">00:00</p>
                             <p id="txtClicks">0</p>
                         </div>                        
                     </div>
 
-                    <div id="divButtonSettings" class="control btn-style">Settings...</div>
+                    <div id="divButtonSettings" class="control btn-style">Settings</div>
 
-                    <div id="divDropdown" class="slide-out">  
+                    <div id="divWiper" class="slide-out">  
                         <div class="control">
                             <label for="inpLevel" class="small">Level</label>
                             <div class="unit">

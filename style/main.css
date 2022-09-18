@@ -5,8 +5,10 @@
     --shadow: 10px 10px 8px green;
     --logo-height: 3rem;
     --fld-size: 48px;
-    --intro-lost:  url('../img/WIN-G.OVER/GAME_OVER.png');
-    --intro-won:  url('../img/WIN-G.OVER/You_win_1.png');
+    --intro-screen: url('../img/WIN-G.OVER/GAME_OVER.png');
+    --brd-right: transparent;
+    --brd-left: black;
+    --pos-right: 0;
 }
 
 * {
@@ -44,7 +46,7 @@ header .logo {
     position: absolute;
     height: 100%;
     width: 100%;
-    background-image: var(--intro-lost);
+    background-image: var(--intro-screen);
     background-repeat: no-repeat;
     background-position: center;
     background-color: rgba(0, 0, 0, 0.66);
@@ -61,6 +63,21 @@ header .logo {
     flex-direction: column;
     padding: 0 1rem;
     width: 30%;
+}
+
+#divButtonSettings{
+    position: relative;
+}
+
+#divButtonSettings::before {
+    position: absolute;
+    right: var(--pos-right);
+    content: '';
+    border: 0.5rem solid;
+    border-left-color: var(--brd-left);
+    border-right-color: var(--brd-right);
+    border-top-color: transparent;
+    border-bottom-color: transparent;
 }
 
 .timer {
@@ -87,6 +104,18 @@ header .logo {
     display: flex;
     justify-content: space-evenly;
     width: 100%;
+}
+
+.icon-flag {
+    position: absolute;
+    display: flex;
+    left: 0;
+    width: 1rem;
+}
+
+.icon-flag img {
+    width: 1rem;
+    height: 1rem;
 }
 
 .slider {
@@ -218,9 +247,6 @@ header .logo {
         align-items: flex-start;
     }
 
-    /* .large {
-        max-width: 2.5rem;
-    } */
     .unit {
         width: 100%;
     }

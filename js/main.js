@@ -1,7 +1,7 @@
 let arrFields = [], arrLevel = ['easy', 'medium', 'hard', 'insane'], arrClassFields =[],
     level = 0, rows = 9, columns = 9, countdown = 0, clicks = 0, 
     debugMode = false, soundEnabled = true,
-    gameOver, mainInterval,
+    gameOver, gameWon, mainInterval,
     gameTimer = new Timer('txtTimer');
 
 const BOMBS_PERCENT = 0.15;
@@ -11,17 +11,19 @@ const SND_EXPLOSION = new Audio('../sounds/explosion.mp3'),
       SND_FLAGOFF = new Audio ('../sounds/plopp.mp3'),
       SND_GAMEOVER = new Audio ('../sounds/game over.mp3'),
       SND_WINNER = new Audio ('../sounds/drumroll.mp3'),
-      SND_CLOCK = new Audio ('../sounds/tick tack.mp3');
+      SND_CLOCK = new Audio ('../sounds/tick tack.mp3'),
+      SND_ALERT = new Audio ('../sounds/alert.mp3');
 
 const sldLevel = document.getElementById('inpLevel'),
       chkCountdown =  document.getElementById('inpCountdown'),
       chkDebug = document.getElementById('inpDebugger'),
       chkSound = document.getElementById('inpSound'),
       btnSettings = document.getElementById('divButtonSettings'),
-      swipe = document.getElementById('divDropdown'),
+      swipe = document.getElementById('divWiper'),
       btnNew = document.getElementById('divClock'),
       clock = document.getElementById('txtTimer'),
       txtClicks = document.getElementById('txtClicks'),
+      txtFlags = document.getElementById('txtFlags'),
       introScreen = document.getElementById('divIntro');
 
 const BOARD = new Board(rows, columns,'divBoardTable');
@@ -33,11 +35,13 @@ init();
  */
 function init() {    
     gameOver = false;
+    gameWon = false;
     clicks = 0;
-    txtClicks.innerText = 0;
     btnNew.setAttribute('class', 'timer');
-    clock.innerText = '00:00';    
     BOARD.create(rows, columns);
+    txtFlags.innerText = BOARD.flagsRemaining;
+    txtClicks.innerText = 0; 
+    clock.innerText = '00:00';     
     mainInterval = watchGameStatus();
 }
 
@@ -49,7 +53,8 @@ function init() {
  */
 function watchGameStatus() {
     return setInterval(() => {
-        if (gameOver) {
+        gameWon = (BOARD.size - BOARD.fieldsRevealed == BOARD.bombs);
+        if (gameOver || gameWon) {
             mainInterval = clearInterval(mainInterval);
             gameTimer.stop();
             gameTimer.countDown('stop');
@@ -59,7 +64,7 @@ function watchGameStatus() {
             btnNew.setAttribute('class', 'timer btn-style');
             btnNew.addEventListener('click', init, {once : true});
         }
-    }, 333);
+    }, 250); // 4 times per second should be enough
 }
  
 
@@ -71,17 +76,35 @@ function playSound(file) {
     if (soundEnabled) file.play();
 }
 
+
+/**
+ * Displays or hides the intro / outro-screen
+ * @param {boolean} status determines if intro screen is displayed or not
+ */
 function showIntroScreen(status) {
+    const CSS_IMAGE = gameWon ? `url('../img/WIN-G.OVER/You_win_1.png')` : `url('../img/WIN-G.OVER/GAME_OVER.png'`;
+    let delay = gameWon ? 400 : 2000;
+    setCSSVar('--intro-screen', CSS_IMAGE);
+
     if (status == true) {
         setTimeout(() => {
             introScreen.classList.remove('hidden');
-            playSound(gameOver ? SND_GAMEOVER : SND_WINNER);
-        }, 2000)
-    } else {
-        introScreen.classList.add('hidden');
-    }
+            playSound(gameWon ? SND_WINNER : SND_GAMEOVER);
+        }, delay)
+        return;
+    } 
+    introScreen.classList.add('hidden');    
 }
 
+/**
+ * Helper function to change CSS variables
+ * @param {string} variable CSS-Variable name
+ * @param {string} value CSS variable's value
+ * @param {string} unit (i.e. px, rem, %...)
+ */
+function setCSSVar(variable, value, unit = '') {
+    document.querySelector(':root').style.setProperty(variable, `${value}${unit}`);
+}
 
 /**
  * Listener for a field to be clicked (right and left click)
@@ -93,18 +116,29 @@ document.addEventListener('rightclick', function () {
     handleClicks('right');
 });
 
+
+/**
+ * Helperfunction for event listeners 'fieldclick' & 'rightclick'
+ * @param {string} button left or right button
+ */
 function handleClicks(button) {
     clicks++;
     txtClicks.innerText = clicks;
     if (clicks == 1) {        
         swipe.setAttribute('class', 'slide-out');
+        changeArrowDirection(true);
         if(!countdown) {
             // TODO: settings erweitern mit Zeitlimit - dann gameTimer.setAlert(setting)
             gameTimer.start();
         }
     } 
     if (countdown) gameTimer.countDown(countdown); 
+    if (button == 'right') txtFlags.innerText = BOARD.flagsRemaining;
 }
+
+window.addEventListener('resize', () => {
+    BOARD.refresh();
+});
 
 /**
  * Listeners for timeout (play with countdown) or 
@@ -112,6 +146,7 @@ function handleClicks(button) {
  */
 document.addEventListener('timeout', (evt) => { 
     gameOver = true;        
+    if (soundEnabled) SND_ALERT.play();
 })   
 document.addEventListener('timerexpired', (evt) => {        
     gameOver = true;    
@@ -124,7 +159,26 @@ document.addEventListener('timerexpired', (evt) => {
 btnSettings.addEventListener('click', () => {
     let isOpen = swipe.classList.contains('slide-in');
     swipe.setAttribute('class', isOpen ? 'slide-out' : 'slide-in');
+    changeArrowDirection(isOpen);
 });
+
+
+/**
+ * Helperfunction to display the setting button's arrow correct
+ * @param {boolean} isOpen determines if settings are shown or not
+ */
+function changeArrowDirection(isOpen) {
+    if (isOpen) {
+        setCSSVar('--brd-right', 'transparent');
+        setCSSVar('--brd-left', 'black');
+        setCSSVar('--pos-right', '0');
+
+    } else {
+        setCSSVar('--brd-right', 'black');
+        setCSSVar('--brd-left', 'transparent');
+        setCSSVar('--pos-right', '0.5rem');
+    }  
+}
 
 
 /**

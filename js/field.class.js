@@ -26,8 +26,10 @@ class Field {
         this.ID = `fld-${this.index}`;
         this.htmlElement = this.#addElement('div', {id: `${this.ID}`, class: 'field', "data-index": `${this.index}`});
         // this.htmlElement.innerText = this.index; // for debugging only...
-        this.#setEvents();
+        this.#setLeftClickEvents();
+        this.#setRightClickEvents();
     }
+
 
     /**
      * Public method to change classes of the field instance properly
@@ -55,14 +57,16 @@ class Field {
 
 
     /**
-     * Adds the event listners for click and right-click to the current instance of the field.
-     * Raises the new 'fieldclick'-event to be watched in main.js 
+     * Adds the event listners for left- and right-click to the current instance of the field.
+     * Raises the new 'fieldclick' | 'rightclick'-event to be watched in main.js 
      * Refreshes the board (parent-object) after click in order to display it correct.
+     *
+     * install the listener for left clicks
      */
-    #setEvents() {        
+    #setLeftClickEvents() {
         if (!this.revealed) {
             this.htmlElement.addEventListener('click', () => {
-                if (this.revealed && this.hasBomb) return; // game is already over and board revealed!
+                if (gameOver || gameWon) return; // game is already over and board revealed!
                 this.revealed = true;
                 this.hasFlag = false;
                 this.exploded = this.hasBomb;
@@ -72,13 +76,25 @@ class Field {
                 this.parentBoard.refresh();
                 document.dispatchEvent(new Event('fieldclick'));
             }, {once : true});
+        }
+    }
 
+
+    /**
+     * install the listener for right clicks
+     */
+    #setRightClickEvents() {
+        if (!this.revealed) {
             this.htmlElement.addEventListener('contextmenu', (event) => {
+                if (gameOver || gameWon) return;
                 event.preventDefault();
-                this.hasFlag = !this.hasFlag && !this.revealed;
-                playSound(this.hasFlag ? SND_FLAG : SND_FLAGOFF);
-                this.parentBoard.refresh();    
-                document.dispatchEvent(new Event('rightclick'));                
+                if (this.parentBoard.flagsRemaining || this.hasFlag) {
+                    this.hasFlag = !this.hasFlag && !this.revealed;
+                    this.parentBoard.flagsRemaining += (this.hasFlag) ? -1 : 1;
+                    playSound(this.hasFlag ? SND_FLAG : SND_FLAGOFF);
+                    this.parentBoard.refresh();    
+                    document.dispatchEvent(new Event('rightclick'));                      
+                }              
             });
         }
     }
