@@ -55,11 +55,8 @@ class Timer {
     showHours = false;
     
     constructor(htmlID, hours = 0, minutes = 0, seconds = 0, run = false) {
-        try {
-            this.htmlElement = document.getElementById(htmlID);
-        } catch (error) {
-            this.htmlElement = undefined;
-        }
+        this.htmlElement = document.getElementById(htmlID);
+        if (this.htmlElement === null) this.htmlElement = undefined;
         this.setTime(hours, minutes, seconds);
         if (run) this.start();
     }
@@ -88,7 +85,7 @@ class Timer {
                     if (this.hrs == 24) this.hrs = 0;
                 }
             }
-            let currTime = this.#formatTime();
+            let currTime = this.#formatTime(this.hrs, this.min, this.sec);
             if (this.alertTime == currTime) document.dispatchEvent(new Event(EXPIRED)); // raise event
             if (this.htmlElement) this.htmlElement.innerText = currTime;
         }, 1000);
@@ -106,7 +103,7 @@ class Timer {
      */
     getTime(returnAs) {
         if (returnAs == 'object') return {hours: this.hrs, minutes: this.min, seconds: this.sec};
-        return this.#formatTime();
+        return this.#formatTime(this.hrs, this.min, this.sec);
     }
 
     setTime(hours = 0, minutes = 0, seconds = 0) {
@@ -156,35 +153,49 @@ class Timer {
     }
 
     /**
-     * Sets and starts or stops a countdown depending on the submitted parameter 'seconds'
+     * Starts or stops a countdown depending on the submitted parameter 'seconds'
+     * or returns the countdown time if seconds are omitted!
      * If seconds are zero, a timeout-event is fired
      * and the countdown timer stops.
      * @param {number | boolean | string} seconds 
-     * if numeric the count down starts with the submitted seconds,
-     * if boolean = 'false' or string = 'stop', the countdown stops
+     * if numeric and > 0, the count down starts with the submitted seconds,
+     * if boolean = 'false' or string = 'stop' or number = 0, the countdown stops
      */
     countDown(seconds) {  
-        if (typeof seconds == 'number') {
+        if (typeof seconds == 'number' && seconds > 0) {
             if (this.countDownID) this.#stopCountDown(); // allow only ONE countdown!
             this.seconds = seconds;
             this.countDownID = setInterval(() => {
                 this.seconds--;
-                if (this.seconds <= 0) {
+                if (!this.timerID && this.htmlElement) this.htmlElement.innerText = this.#getCountDown();
+                if (soundEnabled && this.seconds > 0 && this.seconds < 4 && !SND_CLOCK.ended) SND_CLOCK.play();
+                if (this.seconds <= 0) { 
                     this.#stopCountDown();
                     document.dispatchEvent(new Event(TIMEOUT)); // raise timeout event
                 }
             }, 1000);
-        } else if (seconds === false || seconds === 'stop') {
+        } else if (seconds === false || seconds === 'stop' || seconds == 0) {
             this.#stopCountDown();
+        } else if (seconds === undefined) {
+            return this.#getCountDown();
         } else {
             console.error('Could not set count down due to invalid parameter');
         }
+    }
+
+    #getCountDown() {
+        let hours = parseInt(this.seconds / 3660),
+            minutes = parseInt((this.seconds - hours * 3600) / 60),
+            seconds = parseInt(this.seconds - (hours * 3600 + minutes * 60));
+        return this.#formatTime(hours, minutes, seconds);
     }
 
     /**
      * private method: stops a countdown (when expired)
      */
     #stopCountDown() {
+        SND_CLOCK.pause();
+        SND_CLOCK.currentTime = 0;
         this.countDownID = clearInterval(this.countDownID);
     }
 
@@ -192,11 +203,11 @@ class Timer {
      * private method: formats and returns the timer's value in format hh:nn:ss
      * @returns time string
      */
-    #formatTime() {
+    #formatTime(hours, minutes, seconds) {
         if (this.showMinutes == false) this.showHours = false; // ensure correct format
-        let time = `${('0'+this.sec).slice(-2)}`;
-        if (this.showMinutes) time = `${('0'+this.min).slice(-2)}:` + time;        
-        if (this.showHours) time = `${('0'+this.hrs).slice(-2)}:` + time;
+        let time = `${('0'+seconds).slice(-2)}`;
+        if (this.showMinutes) time = `${('0'+minutes).slice(-2)}:` + time;        
+        if (this.showHours) time = `${('0'+hours).slice(-2)}:` + time;
         return time;
     }
 
