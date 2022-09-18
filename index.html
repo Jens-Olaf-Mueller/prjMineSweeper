@@ -9,6 +9,7 @@
         <link rel="icon" type="image/x-icon" href="./img/icons/Mine.jpg">
         <link rel="stylesheet" href="./style/main.css">
         <link rel="stylesheet" href="./style/dropdown.css">
+        <link rel="stylesheet" href="./style/style_tooltip.css">
         <link rel="stylesheet" href="./style/fonts.css" type="text/css" charset="utf-8">
 
         <script src="./js/timer.class.js"></script>
@@ -31,24 +32,24 @@
                             <!-- <p id="txtCountDown" class="time">00:00</p> -->
                             <div class="icon-flag">
                                 <img src="./img/icons/Flag.png">
-                                <p id="txtFlags">0</p>
+                                <p id="txtFlags" class="tooltip" data-tooltip="You can set and remove flags by right click.">0</p>
                             </div>                            
                             <p id="txtTimer" class="time">00:00</p>
-                            <p id="txtClicks">0</p>
+                            <p id="txtClicks" class="tooltip" data-tooltip="Counts your clicks in the board.">0</p>
                         </div>                        
                     </div>
 
                     <div id="divButtonSettings" class="control btn-style">Settings</div>
 
                     <div id="divWiper" class="slide-out">  
-                        <div class="control">
+                        <div class="control tooltip" data-tooltip="There are 4 different boards: easy (9 x 9), medium (16 x 16), hard (16 x 30), insane (24 x 30)">
                             <label for="inpLevel" class="small">Level</label>
                             <div class="unit">
                                 <input id="inpLevel" class="slider large" type="range" min="0" max="3" value="0">
                                 <label id="lblLevel">easy</label>
                             </div>                         
                         </div>                      
-                        <div class="control">
+                        <div class="control tooltip" data-tooltip="Starts a countdown with each click. When the set time has expired, the game is lost. If no countdown is set, a normal clock starts.">
                             <label for="inpCountdown">Countdown</label>
                             <div class="unit">
                                 <input id="inpCountdown" class="slider switch" type="range" min="0" max="60" step="10" value="0">
@@ -76,7 +77,7 @@
                 </div>                
             </div> 
 
-            <div id="divIntro" class="intro hidden"></div>
+            <div id="divIntro" class="intro zoom-in hidden"></div>
         </main>
     </body>
 </html>

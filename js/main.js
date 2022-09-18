@@ -5,14 +5,14 @@ let arrFields = [], arrLevel = ['easy', 'medium', 'hard', 'insane'], arrClassFie
     gameTimer = new Timer('txtTimer');
 
 const BOMBS_PERCENT = 0.15;
-const SND_EXPLOSION = new Audio('../sounds/explosion.mp3'),
-      SND_DIG = new Audio ('../sounds/digging.mp3'),
-      SND_FLAG = new Audio ('../sounds/flag.mp3'),
-      SND_FLAGOFF = new Audio ('../sounds/plopp.mp3'),
-      SND_GAMEOVER = new Audio ('../sounds/game over.mp3'),
-      SND_WINNER = new Audio ('../sounds/drumroll.mp3'),
-      SND_CLOCK = new Audio ('../sounds/tick tack.mp3'),
-      SND_ALERT = new Audio ('../sounds/alert.mp3');
+const SND_EXPLOSION = new Audio('./sounds/explosion.mp3'),
+      SND_DIG = new Audio ('./sounds/digging.mp3'),
+      SND_FLAG = new Audio ('./sounds/flag.mp3'),
+      SND_FLAGOFF = new Audio ('./sounds/plopp.mp3'),
+      SND_GAMEOVER = new Audio ('./sounds/game over.mp3'),
+      SND_WINNER = new Audio ('./sounds/drumroll.mp3'),
+      SND_CLOCK = new Audio ('./sounds/tick tack.mp3'),
+      SND_ALERT = new Audio ('./sounds/alert.mp3');
 
 const sldLevel = document.getElementById('inpLevel'),
       chkCountdown =  document.getElementById('inpCountdown'),
@@ -83,7 +83,7 @@ function playSound(file) {
  */
 function showIntroScreen(status) {
     const CSS_IMAGE = gameWon ? `url('../img/WIN-G.OVER/You_win_1.png')` : `url('../img/WIN-G.OVER/GAME_OVER.png'`;
-    let delay = gameWon ? 400 : 2000;
+    let delay = gameWon ? 400 : 1800;
     setCSSVar('--intro-screen', CSS_IMAGE);
 
     if (status == true) {

@@ -1,0 +1,60 @@
+/* styling the tooltips */
+
+.tooltip {
+    position: relative;
+    /* width: max-content; */
+    cursor: pointer;
+    text-shadow: none;
+}
+  
+.tooltip::before,
+.tooltip::after {
+    --scale: 0;
+    --arrow-size: 16px;
+    --tooltip-color: green; /* #333;*/
+    --text-color: lime;
+  
+    position: absolute;
+    top: -.25rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(var(--translate-y, 0)) scale(var(--scale));
+    transition: 150ms transform;
+    transform-origin: bottom left;
+}
+  
+.tooltip::before {
+    --translate-y: calc(-100% - var(--arrow-size));
+  
+    content: attr(data-tooltip);
+    color: var(--text-color);
+    padding: .5rem;
+    border-radius: .3rem;
+    text-align: center;
+    font-size: 0.66rem;
+    font-weight: lighter;
+    min-width: fit-content;
+    width: auto;
+    /* max-width: 100%; */
+    max-width: max-content;
+    background: var(--tooltip-color);
+}
+  
+.tooltip:hover::before,
+.tooltip:hover::after {
+    --scale: 1;
+}
+  
+.tooltip::after {
+    --translate-y: calc(-1 * var(--arrow-size) - 1px);
+  
+    content: '';
+    left: 40%;
+    border: var(--arrow-size) solid transparent;
+    border-top-color: var(--tooltip-color);
+    transform-origin: top left;
+}
+
+.tooltip:disabled::before,
+.tooltip:disabled::after {
+    --scale: 0;
+}

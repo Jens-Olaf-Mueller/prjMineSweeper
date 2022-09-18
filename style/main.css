@@ -52,6 +52,15 @@ header .logo {
     background-color: rgba(0, 0, 0, 0.66);
 }
 
+.zoom-in {
+    animation: zoom-in 750ms ease-in;
+}  
+@keyframes zoom-in {
+    0% {transform: scale(0, 0);}
+    /* 50% {transform: scale(0.5, 0.5);} */
+    100% {transform: scale(1, 1);}
+}
+
 .playground {
     display: flex;
     height: calc(100% - var(--logo-height) - 3rem); /* 2 x margin 1rem + 1 x margin-bottom 1rem*/
@@ -97,7 +106,7 @@ header .logo {
     position: absolute;
     bottom: 0;
     right: 0.5rem;
-    color: navy;
+    color: darkgreen;
 }
 
 #divStatus {
@@ -111,11 +120,16 @@ header .logo {
     display: flex;
     left: 0;
     width: 1rem;
+    color: darkgreen;
 }
 
 .icon-flag img {
     width: 1rem;
     height: 1rem;
+}
+
+.icon-flag p, #txtClicks {
+    text-shadow: 8px 4px 4px var(--shadow);
 }
 
 .slider {
