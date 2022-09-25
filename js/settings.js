@@ -20,6 +20,7 @@ const sldLevel = $('inpLevel'),
       lblDebugger = $('lblDebugger'),
       chkEditor = $('inpEditor'),
       lblEditor = $('lblEditor'),
+      txtLevelName = $('inpLevelName'),
       chkSound = $('inpSound'),
       lblSound = $('lblSound'),
       btnSettings = $('divButtonSettings'),
@@ -31,11 +32,20 @@ const sldLevel = $('inpLevel'),
       imgFlag = $('imgFlag'),
       introScreen = $('divIntro');
 
+
 let arrLevel = ['easy', 'medium', 'hard', 'insane','wtf ???'], arrClassFields =[],
     level = 0, theme = 0, rows = 9, columns = 9, countdown = 0, clicks = 0, bombsRemaining = 0,
     debugMode = false, editorMode = false, soundEnabled = true,
     gameOver, gameWon, mainInterval,
     gameTimer = new Timer('txtTimer');
+
+// for CSS-variables
+let bgColors = ['silver', 'green', 'steelblue'],
+    brdColors = ['#333333', 'green', 'navy'],
+    txtColors = ['navy', 'darkgreen', 'navy'],
+    hovColors = ['#e0e0e0', 'lime', 'dodgerblue'],
+    sldColor = ['lightgrey','limegreen', 'steelblue'],
+    hue = [0,270,0], bright = [0.9,1.25,0.9], sepia = [0.75,1,0.5];
 
 let gameSettings = {
     player: '',
@@ -44,9 +54,9 @@ let gameSettings = {
     countDown: 0,
     soundEnabled: 1,
     debugMode: 0,
-    currentTheme: 1,
+    currentTheme: 0,
     themes: ['Classic','Green','DevAc'],
-    level: [
+    levels: [
             {   name: 'easy',
                 rows: 9,
                 columns: 9,
@@ -81,8 +91,14 @@ function loadSettings(key = APP_NAME) {
 
 function setSettings () {    
     level = gameSettings.currentLevel;
+    sldLevel.max = gameSettings.levels.length;
     sldLevel.value = level;
-    lblLevel.innerText = ' ' + gameSettings.level[level].name;
+    lblLevel.innerText = ' ' + gameSettings.levels[level].name;
+
+    theme = gameSettings.currentTheme;
+    sldTheme.value = theme;
+    lblTheme.innerText = ' ' + gameSettings.themes[theme];
+    changeTheme(theme);
     
     countdown = gameSettings.countDown;
     chkCountdown.value = countdown;
@@ -110,12 +126,6 @@ function saveSettings (key = APP_NAME) {
 
 
 function changeTheme(theme) {
-    let bgColors = ['silver', 'green', 'steelblue'],
-        brdColors = ['#333333', 'green', 'navy'],
-        txtColors = ['navy', 'darkgreen', 'navy'],
-        hovColors = ['#e0e0e0', 'lime', 'dodgerblue'],
-        sldColor = ['lightgrey','limegreen', 'steelblue'],
-        hue = [0,270,0], bright = [0.9,1.25,0.9], sepia = [0.75,1,0.5];
     setCSSVar('--main-bg', `url('../img/background/full-bg${theme}.png')`);
     setCSSVar('--hover-color', hovColors[theme]);
     setCSSVar('--slider-color', sldColor[theme]);

@@ -268,6 +268,17 @@ header .logo {
     gap: 0.25rem;
 }
 
+.control input[type='text'] {
+    max-width: 4.5rem;
+    outline: none;
+    /* border: 1px solid var(--brd-color); */
+    border: none;
+    border-radius: 3px;
+    text-shadow: none;
+    text-align: center;
+    background-color: var(--slider-color);
+}
+
 .btn-style {
     justify-content: center;
     cursor: pointer;

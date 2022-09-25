@@ -192,9 +192,14 @@ chkSound.oninput = function() {
  * Switches on | off the editor mode
  */
 chkEditor.oninput = function() {
-    editorMode = parseInt(this.value) == 1 ? true : false;
+    editorMode = parseInt(this.value) == 1 ? true : false;        
+    if (toggleEditor(editorMode)) {
+        toggleMenu(editorMode); 
+    } else {
+        chkEditor.value = 1;
+        editorMode = true;
+    }  
     lblEditor.innerText = editorMode ? 'on' : 'off';
-    toggleEditor(editorMode);
 }
 
 function toggleEditor(mode) {
@@ -202,17 +207,43 @@ function toggleEditor(mode) {
     imgFlag.src = mode ? './img/icons/Mine.jpg' : './img/icons/Flag.png';
 
     if (mode) {
-        BOARD.create(rows, columns);        
-    } else {        
-        gameSettings.level.push({
-            name: 'new level',
-            rows: rows,
-            columns: columns,
-            bombs: []        
-        });
-        console.log('Save ceated board...', gameSettings.level );
-        debugger
+        BOARD.create(rows, columns); 
+        return true;       
+    } else {
+        let lvlName = txtLevelName.value,
+            arrBombs = getBombIndices();
+        if (lvlName.length > 2 && arrBombs.length) {
+            gameSettings.levels.push({
+                name: lvlName,
+                rows: rows,
+                columns: columns,
+                bombs: arrBombs        
+            });
+            sldLevel.max = gameSettings.levels.length;
+            return true;
+        }   
+        
+        console.log('Save ceated board...', gameSettings.levels );
+        // debugger
+        txtLevelName.focus();
+        return false;
     }   
+}
+
+function getBombIndices() {
+    let arr = [];
+    for (let i = 0; i < BOARD.size; i++) {
+        if (BOARD.arrFields[i].hasBomb) arr.push(i);
+    }
+    return arr;
+}
+
+function toggleMenu(mode) {
+    let arrMenu = $('.menu');
+    for (let i = 0; i < arrMenu.length; i++) {
+        const item = arrMenu[i];
+        item.classList.toggle('hidden')
+    }
 }
 
 /**
@@ -230,11 +261,12 @@ sldTheme.oninput = function() {
  */
 sldLevel.oninput = function changeLevel() {
     level = parseInt(this.value);    
-    rows = gameSettings.level[level].rows;
-    columns = gameSettings.level[level].columns;
-    lblLevel.innerText = ' ' + gameSettings.level[level].name;
+    rows = gameSettings.levels[level].rows;
+    columns = gameSettings.levels[level].columns;
+    let arrBombs = gameSettings.levels[level].bombs;
+    lblLevel.innerText = ' ' + gameSettings.levels[level].name;
     if (!gameOver) {
-        BOARD.create(rows, columns);
+        BOARD.create(rows, columns, arrBombs);
         txtFlags.innerText = BOARD.flagsRemaining;
     } 
 }
