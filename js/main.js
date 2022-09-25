@@ -1,30 +1,3 @@
-let arrFields = [], arrLevel = ['easy', 'medium', 'hard', 'insane'], arrClassFields =[],
-    level = 0, rows = 9, columns = 9, countdown = 0, clicks = 0, 
-    debugMode = false, soundEnabled = true,
-    gameOver, gameWon, mainInterval,
-    gameTimer = new Timer('txtTimer');
-
-const BOMBS_PERCENT = 0.15;
-const SND_EXPLOSION = new Audio('./sounds/explosion.mp3'),
-      SND_DIG = new Audio ('./sounds/digging.mp3'),
-      SND_FLAG = new Audio ('./sounds/flag.mp3'),
-      SND_FLAGOFF = new Audio ('./sounds/plopp.mp3'),
-      SND_GAMEOVER = new Audio ('./sounds/game over.mp3'),
-      SND_WINNER = new Audio ('./sounds/drumroll.mp3'),
-      SND_CLOCK = new Audio ('./sounds/tick tack.mp3'),
-      SND_ALERT = new Audio ('./sounds/alert.mp3');
-
-const sldLevel = document.getElementById('inpLevel'),
-      chkCountdown =  document.getElementById('inpCountdown'),
-      chkDebug = document.getElementById('inpDebugger'),
-      chkSound = document.getElementById('inpSound'),
-      btnSettings = document.getElementById('divButtonSettings'),
-      swipe = document.getElementById('divWiper'),
-      btnNew = document.getElementById('divClock'),
-      clock = document.getElementById('txtTimer'),
-      txtClicks = document.getElementById('txtClicks'),
-      txtFlags = document.getElementById('txtFlags'),
-      introScreen = document.getElementById('divIntro');
 
 const BOARD = new Board(rows, columns,'divBoardTable');
 
@@ -33,10 +6,12 @@ init();
 /**
  * Start function of the game
  */
-function init() {    
+function init() {   
+    loadSettings(APP_NAME); 
     gameOver = false;
     gameWon = false;
     clicks = 0;
+    gameTimer.showHours = false;
     btnNew.setAttribute('class', 'timer');
     BOARD.create(rows, columns);
     txtFlags.innerText = BOARD.flagsRemaining;
@@ -109,13 +84,18 @@ function setCSSVar(variable, value, unit = '') {
 /**
  * Listener for a field to be clicked (right and left click)
  */
-document.addEventListener('fieldclick', function () {
+document.addEventListener('fieldclick', function() {
     handleClicks('left');
 })
-document.addEventListener('rightclick', function () {
+document.addEventListener('rightclick', function() {
     handleClicks('right');
 });
-
+document.addEventListener('edit', () => {    
+    SND_FLAGOFF.currentTime = 0;
+    SND_FLAGOFF.play();
+    txtFlags.innerText = BOARD.flagsRemaining;
+    BOARD.refresh();
+});
 
 /**
  * Helperfunction for event listeners 'fieldclick' & 'rightclick'
@@ -165,19 +145,12 @@ btnSettings.addEventListener('click', () => {
 
 /**
  * Helperfunction to display the setting button's arrow correct
- * @param {boolean} isOpen determines if settings are shown or not
+ * @param {boolean} isOpen toggles settings
  */
 function changeArrowDirection(isOpen) {
-    if (isOpen) {
-        setCSSVar('--brd-right', 'transparent');
-        setCSSVar('--brd-left', 'black');
-        setCSSVar('--pos-right', '0');
-
-    } else {
-        setCSSVar('--brd-right', 'black');
-        setCSSVar('--brd-left', 'transparent');
-        setCSSVar('--pos-right', '0.5rem');
-    }  
+    setCSSVar('--brd-right', isOpen ? 'transparent' : 'black');
+    setCSSVar('--brd-left', isOpen ? 'black' : 'transparent');
+    setCSSVar('--pos-right', isOpen ? '0' : '0.5rem'); 
 }
 
 
@@ -194,8 +167,7 @@ introScreen.addEventListener('click', () => {
  */
  chkCountdown.oninput = function() {
     countdown = parseInt(this.value);
-    let value = countdown == 0 ? 'off' : countdown + ' sec';
-    document.getElementById('lblCountdown').innerText = value;
+    lblCountdown.innerText = countdown == 0 ? 'off' : countdown + ' sec';
 }  
 
 
@@ -204,7 +176,7 @@ introScreen.addEventListener('click', () => {
  */
 chkDebug.oninput = function() {
     debugMode = parseInt(this.value) == 1 ? true : false;
-    document.getElementById('lblDebugger').innerText = debugMode ? 'on' : 'off';
+    lblDebugger.innerText = debugMode ? 'on' : 'off';
     BOARD.debugMode = debugMode;
     BOARD.refresh();
 }
@@ -212,32 +184,57 @@ chkDebug.oninput = function() {
 
 chkSound.oninput = function() {
     soundEnabled = parseInt(this.value) == 1 ? true : false;
-    document.getElementById('lblSound').innerText = soundEnabled ? 'on' : 'off';
+    lblSound.innerText = soundEnabled ? 'on' : 'off';
 }
+
+
+/**
+ * Switches on | off the editor mode
+ */
+chkEditor.oninput = function() {
+    editorMode = parseInt(this.value) == 1 ? true : false;
+    lblEditor.innerText = editorMode ? 'on' : 'off';
+    toggleEditor(editorMode);
+}
+
+function toggleEditor(mode) {
+    BOARD.editMode = mode;
+    imgFlag.src = mode ? './img/icons/Mine.jpg' : './img/icons/Flag.png';
+
+    if (mode) {
+        BOARD.create(rows, columns);        
+    } else {        
+        gameSettings.level.push({
+            name: 'new level',
+            rows: rows,
+            columns: columns,
+            bombs: []        
+        });
+        console.log('Save ceated board...', gameSettings.level );
+        debugger
+    }   
+}
+
+/**
+ * Determines the theme to play the game with
+ */
+sldTheme.oninput = function() {
+    theme = parseInt(this.value);
+    lblTheme.innerText = gameSettings.themes[theme];
+    changeTheme(theme);
+}
+
 
 /**
  * Determines the game level and creates a new board based on the level.
  */
-sldLevel.oninput = function() {
-    level = parseInt(this.value);
-    document.getElementById('lblLevel').innerText = ' ' + arrLevel[level];
-    switch (level) {
-        case 0:
-            rows = 9;
-            columns = 9;
-            break;
-        case 1:
-            rows = 16;
-            columns = 16;
-            break;
-        case 2:
-            rows = 16;
-            columns = 30;
-            break;
-        case 3:
-            rows = 24;
-            columns = 30;
-            break;
-    }
-    if (!gameOver) BOARD.create(rows, columns);
+sldLevel.oninput = function changeLevel() {
+    level = parseInt(this.value);    
+    rows = gameSettings.level[level].rows;
+    columns = gameSettings.level[level].columns;
+    lblLevel.innerText = ' ' + gameSettings.level[level].name;
+    if (!gameOver) {
+        BOARD.create(rows, columns);
+        txtFlags.innerText = BOARD.flagsRemaining;
+    } 
 }
