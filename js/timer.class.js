@@ -18,14 +18,14 @@
  *              - stop()
  *              - reset()
  *              - clear()
- *              - countDown()
+ *              - countDown()   starts or stops a countdown (false | 'stop | 0 will stop it)
  * 
  * PROPERTIES:  3
  *              .htmlElement    --> connected HTML-Element to display the time
  *              .alertTime      --> returns the set alert time (or 'undefined' if missed)
  *              .showMinutes    --> determines if counting minutes are displayed (default = true)
  *                                  if showMinutes = 'false', hours won't be displayed either!
- *              .showHours      --> determines if counting hours are displayed (default = false)
+ *              .showHours      --> determines if counting hours are displayed (default = true)
  * 
  * EVENTS:      2
  *              - timeout       --> fired when countdown reaches zero
@@ -40,8 +40,10 @@ const TIMEOUT = 'timeout',
       EXPIRED = 'timerexpired';
 
 class Timer {
-    timerID = undefined;
-    countDownID = undefined;
+    #timerID = undefined;
+    get ID() {return this.#timerID};
+    #countDownID = undefined;
+    get countDownID() {return this.#countDownID};
     htmlElement = undefined;
     alertTime = undefined;
     start_sec = 0;
@@ -52,7 +54,8 @@ class Timer {
     hrs = 0;
     seconds = 0; // for countdown!
     showMinutes = true;
-    showHours = false;
+    showHours = true;
+
     
     constructor(htmlID, hours = 0, minutes = 0, seconds = 0, run = false) {
         this.htmlElement = document.getElementById(htmlID);
@@ -61,6 +64,7 @@ class Timer {
         if (run) this.start();
     }
 
+
     /**
      * starts a defined timer or continues a stopped one.
      * @param {boolean} resume if true, continue a stopped or not started timer
@@ -68,13 +72,13 @@ class Timer {
      */
     start(resume) {
         if (resume) {
-            if (this.timerID) clearInterval(this.timerID);
+            if (this.#timerID) clearInterval(this.#timerID);
         } else {
-            if (this.timerID) return; // avoid conflict with a running timer!
+            if (this.#timerID) return; // avoid conflict with a running timer!
             this.reset();
         }
         // start the interval timer
-        this.timerID = setInterval(() => {
+        this.#timerID = setInterval(() => {
             this.sec++;
             if (this.sec == 60) {
                 this.sec = 0;
@@ -91,9 +95,14 @@ class Timer {
         }, 1000);
     }
 
+
+    /**
+     * resumes a stopped timer (or starts it when not done before)
+     */
     resume() {
         this.start(true);
     }
+
 
     /**
      * returns the current time
@@ -106,7 +115,22 @@ class Timer {
         return this.#formatTime(this.hrs, this.min, this.sec);
     }
 
+    
+    /**
+     * Sets the time parameters.
+     * Either seperately or as a valid time string such as: '17:55:30'
+     * If minutes or seconds are omitted in time string they will be set to 0!
+     * @param {number | string} hours hours of the time to be set or whole time string
+     * @param {number} minutes ignored if hours is a string
+     * @param {number} seconds ignored if hours is a string
+     */
     setTime(hours = 0, minutes = 0, seconds = 0) {
+        if (typeof hours == 'string') {
+            let arrTime = this.#parseTimeString(hours);
+            hours = arrTime[0];
+            minutes = arrTime[1] || 0;
+            seconds = arrTime[2] || 0;
+        } 
         if (this.#validateTime(hours, minutes, seconds)) {
             this.start_sec = seconds;
             this.start_min = minutes;
@@ -117,7 +141,22 @@ class Timer {
         console.error('Could not set time due to invalid parameter(s)');
     }
 
+
+    /**
+     * Sets an alert time.
+     * Params can be provided seperately or as a valid time string such as: '17:55:30'
+     * If minutes or seconds are omitted in time string they will be set to 0!
+     * @param {number | string} hours hours of the time to be set or whole time string
+     * @param {number} minutes ignored if hours is a string
+     * @param {number} seconds ignored if hours is a string
+     */
     setAlert(hours = 0, minutes = 0, seconds = 0) {
+        if (typeof hours == 'string') {
+            let arrTime = this.#parseTimeString(hours);
+            hours = arrTime[0];
+            minutes = arrTime[1] || 0;
+            seconds = arrTime[2] || 0;
+        } 
         if (this.#validateTime(hours, minutes, seconds)) {
             this.alertTime = `${('0'+hours).slice(-2)}:${('0'+minutes).slice(-2)}:${('0'+seconds).slice(-2)}`;
             return;
@@ -126,9 +165,14 @@ class Timer {
         console.error('Could not set alert due to invalid parameter(s)');
     }
 
+
+    /**
+     * Stops the timer. A possible running count down will be continue!
+     */
     stop() {
-        this.timerID = clearInterval(this.timerID);
+        this.#timerID = clearInterval(this.#timerID);
     }
+
 
     /**
      * resets the timer
@@ -146,11 +190,16 @@ class Timer {
         }        
     }
 
+
+    /**
+     * clears a timer and sets its start value to zero (00:00:00)
+     */
     clear() {
-        this.timerID = clearInterval(this.timerID);
-        this.countDownID = clearInterval(this.countDownID);
-        this.reset();
+        this.#timerID = clearInterval(this.#timerID);
+        this.#countDownID = clearInterval(this.#countDownID);
+        this.reset(0);
     }
+
 
     /**
      * Starts or stops a countdown depending on the submitted parameter 'seconds'
@@ -163,11 +212,11 @@ class Timer {
      */
     countDown(seconds) {  
         if (typeof seconds == 'number' && seconds > 0) {
-            if (this.countDownID) this.#stopCountDown(); // allow only ONE countdown!
+            if (this.#countDownID) this.#stopCountDown(); // allow only ONE countdown!
             this.seconds = seconds;
-            this.countDownID = setInterval(() => {
+            this.#countDownID = setInterval(() => {
                 this.seconds--;
-                if (!this.timerID && this.htmlElement) this.htmlElement.innerText = this.#getCountDown();
+                if (!this.#timerID && this.htmlElement) this.htmlElement.innerText = this.#getCountDown();
                 if (soundEnabled && this.seconds > 0 && this.seconds < 4 && !SND_CLOCK.ended) SND_CLOCK.play();
                 if (this.seconds <= 0) {                     
                     this.#stopCountDown();
@@ -183,6 +232,7 @@ class Timer {
         }
     }
 
+
     #getCountDown() {
         let hours = parseInt(this.seconds / 3660),
             minutes = parseInt((this.seconds - hours * 3600) / 60),
@@ -196,8 +246,9 @@ class Timer {
     #stopCountDown() {
         SND_CLOCK.pause();
         SND_CLOCK.currentTime = 0;
-        this.countDownID = clearInterval(this.countDownID);
+        this.#countDownID = clearInterval(this.#countDownID);
     }
+
 
     /**
      * private method: formats and returns the timer's value in format hh:nn:ss
@@ -210,6 +261,17 @@ class Timer {
         if (this.showHours) time = `${('0'+hours).slice(-2)}:` + time;
         return time;
     }
+
+
+    /**
+     * parses a given time string and returns it as array
+     * @param {string} time a valid time string like: '17:55:30'
+     * @returns array, containing [hours, minutes, seconds]
+     */
+    #parseTimeString(time) {
+        return time.split(':').map(Number);
+    }
+
 
     /**
      * private method: checks if a given time is valid

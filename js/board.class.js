@@ -2,13 +2,16 @@ class Board {
     arrFields = [];
     boardParentHTML = undefined;
     htmlBoard = undefined;
-    size;
-    bombs;
-    fieldsRevealed;
+    get size() {return this.arrFields.length}; 
+    get bombs() {return parseInt(this.#rows * this.#cols * BOMBS_PERCENT)};
     flagsRemaining;
+    fieldsRevealed;
     debugMode;
+    editMode = false;
     #rows;
     #cols;
+
+    
 
     constructor(rows, columns, parentHtmlID, debugMode = false) { 
         this.boardParentHTML = document.getElementById(parentHtmlID);
@@ -25,9 +28,10 @@ class Board {
      * @param {number} rows number of rows in the new board
      * @param {number} cols number of columns in the board
      */
-    create(rows, cols) {
+    create(rows, cols, bombs = []) {
         this.#rows = rows;
-        this.#cols = cols;        
+        this.#cols = cols;    
+        this.flagsRemaining = this.bombs;    
         if (this.htmlBoard === undefined) {
             this.htmlBoard = this.#addElement('div', {id: 'divBoard', class: 'board'});
             this.boardParentHTML.appendChild(this.htmlBoard);
@@ -39,8 +43,8 @@ class Board {
                 this.arrFields.push(field);
             }
         }
-        this.size = this.arrFields.length;
-        this.#setBombs();
+        // if (!this.editMode) this.#setBombs(bombs);
+        if (!this.editMode) this.#setBombs(bombs);
         this.refresh();
         if (debugMode) console.log('Fields: ', this.arrFields);
     }
@@ -58,7 +62,12 @@ class Board {
             const fld = this.arrFields[i];
             this.htmlBoard.appendChild(fld.htmlElement);           
             fld.toggleClass('flag', fld.hasFlag);            
-            if (fld.hasBomb) fld.toggleClass('debugging', this.debugMode);
+            if (fld.hasBomb) {
+                fld.toggleClass('debugging', this.debugMode);
+            } else if (this.editMode) {
+                fld.toggleClass('mine', false);
+                fld.toggleClass('revealed', false);
+            }
             if (fld.revealed) {
                 this.fieldsRevealed++;
                 fld.toggleClass('revealed', true);
@@ -66,7 +75,7 @@ class Board {
                 if (fld.hasBomb) fld.toggleClass('mine', true);
                 if (fld.exploded) fld.toggleClass('bang', true);
                 if (fld.hasFlag && !fld.hasBomb) fld.toggleClass('flagwrong', true);                                
-            }                                   
+            }                          
         }
         this.#setFieldSize();
     }
@@ -118,17 +127,22 @@ class Board {
     /**
      * Private method to place the bombs in the new created field
      */
-    #setBombs() {
-        let z = 0;
-        this.bombs = parseInt(this.#rows * this.#cols * BOMBS_PERCENT);
-        this.flagsRemaining = this.bombs;
-        do {
-            const fld = parseInt(Math.random() * this.arrFields.length);
-            if (this.arrFields[fld].hasBomb == false) {
+    #setBombs(bombs) {
+        if (bombs.length == 0) {
+            let z = 0;
+            do {
+                const fld = parseInt(Math.random() * this.arrFields.length);
+                if (this.arrFields[fld].hasBomb == false) {
+                    this.arrFields[fld].hasBomb = true;
+                    z++;
+                }
+            } while (z < this.bombs);
+        } else {
+            for (let i = 0; i < bombs.length; i++) {
+                const fld = bombs[i];
                 this.arrFields[fld].hasBomb = true;
-                z++;
             }
-        } while (z < this.bombs);
+        }
         this.#countBombNeighbours();
     }
 

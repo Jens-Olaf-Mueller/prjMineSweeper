@@ -1,11 +1,35 @@
 :root {
-    --bg-green: green;  /* #f9ca24; #ffa600;*/
+    --bg-color: green;  /* #f9ca24; #ffa600;*/
     --brd-color: green;
-    --bg-lime: limegreen;
+    --hover-color: lime;
+    --slider-color: limegreen;
+    --text-color: darkgreen;
     --shadow: 10px 10px 8px green;
     --logo-height: 3rem;
     --fld-size: 48px;
+    /* --test: #e0e0e0; */
+
     --intro-screen: url('../img/WIN-G.OVER/GAME_OVER.png');
+    --main-bg: url('../img/background/full-bg1.png');
+    --flag: url('../img/buttons/flag1.png');
+    --flag-wrong: url('../img/buttons/wrong_flag1.png');
+    --mine: url('../img/buttons/mine1.png');
+    --bang: url('../img/buttons/bang1.png');    
+    --revealed: url('../img/buttons/revealed1.png');
+    --flt-hue: hue-rotate(270deg);
+    --flt-bright: brightness(1.25);
+    --flt-sepia: sepia(1);
+
+    --fld0: url('../img/buttons/field0-1.png');
+    --fld1: url('../img/buttons/field1-1.png');
+    --fld2: url('../img/buttons/field2-1.png');
+    --fld3: url('../img/buttons/field3-1.png');
+    --fld4: url('../img/buttons/field4-1.png');
+    --fld5: url('../img/buttons/field5-1.png');
+    --fld6: url('../img/buttons/field6-1.png');
+    --fld7: url('../img/buttons/field7-1.png');
+    --fld8: url('../img/buttons/field8-1.png');
+
     --brd-right: transparent;
     --brd-left: black;
     --pos-right: 0;
@@ -15,15 +39,15 @@
     margin: 0;
     box-sizing: border-box;
     font-family: 'Nerko One', Verdana;
-    font-size: xx-large;
-    text-shadow: 8px 4px 4px var(--bg-green);
+    font-size: x-large;
+    text-shadow: 8px 4px 4px var(--bg-color);
 }
 
 main {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-image: url('../img/background/full-bg.png');
+    background-image: var(--main-bg) ;
     background-position: top;
     background-size: cover;
     background-repeat: no-repeat;
@@ -71,7 +95,7 @@ header .logo {
     display: flex;
     flex-direction: column;
     padding: 0 1rem;
-    width: 30%;
+    min-width: 39vmin;
 }
 
 #divButtonSettings{
@@ -106,7 +130,7 @@ header .logo {
     position: absolute;
     bottom: 0;
     right: 0.5rem;
-    color: darkgreen;
+    color: var(--text-color);
 }
 
 #divStatus {
@@ -120,7 +144,7 @@ header .logo {
     display: flex;
     left: 0;
     width: 1rem;
-    color: darkgreen;
+    color: var(--text-color);
 }
 
 .icon-flag img {
@@ -137,7 +161,7 @@ header .logo {
     height: 0.66rem;
     max-width: 1.5rem;
     cursor: pointer;
-    background: var(--bg-lime);
+    background: var(--slider-color);
     outline: none;
     border: 2px solid var(--brd-color);
     border-radius: 10px;  
@@ -149,14 +173,14 @@ header .logo {
     appearance: none;
     width: 20px;
     height: 20px;
-    background: var(--bg-green);
+    background: var(--bg-color);
     cursor: pointer;
     border: 2px solid var(--brd-color);
     border-radius: 50%;
 }
 
 .slider::-webkit-slider-thumb:hover {
-    background: lime;
+    background: var(--hover-color);
 }
 .board-table {
     display: flex;
@@ -165,7 +189,6 @@ header .logo {
     align-items: center;
     margin-right: 1rem;
     border-radius: 8px;
-    /* background: white; */
 }
 
 .board {    
@@ -182,41 +205,46 @@ header .logo {
     align-items: center;
     height: var(--fld-size);
     width: var(--fld-size);
-    background-image: url('../img/buttons/field0.png');
+    background-image: var(--fld0);
     background-size: cover;
     background-color: transparent;
+    /* border: 1px solid transparent; */
     cursor: pointer;
 }
 
 .field:hover {
-    filter: brightness(1.25);
+    filter: var(--flt-bright);
 }
 
-.revealed {
-    background-image: url('../img/buttons/revealed.png');
-}
+.revealed {background-image: var(--revealed);}
 
 .revealed:hover {
     filter: brightness(1);
 }
 
-.field1 {background-image: url('../img/buttons/field1.png');}
-.field2 {background-image: url('../img/buttons/field2.png');}
-.field3 {background-image: url('../img/buttons/field3.png');}
-.field4 {background-image: url('../img/buttons/field4.png');}
-.field5 {background-image: url('../img/buttons/field5.png');}
-.field6 {background-image: url('../img/buttons/field6.png');}
-.field7 {background-image: url('../img/buttons/field7.png');}
-.field8 {background-image: url('../img/buttons/field8.png');}
+.field1 {background-image: var(--fld1);}
+.field2 {background-image: var(--fld2);}
+.field3 {background-image: var(--fld3);}
+.field4 {background-image: var(--fld4);}
+.field5 {background-image: var(--fld5);}
+.field6 {background-image: var(--fld6);}
+.field7 {background-image: var(--fld7);}
+.field8 {background-image: var(--fld8);}
 
-.mine {background-image: url('../img/buttons/mine.png');}
+.mine {background-image: var(--mine);}
 .bang, .bang:hover {
-    background-image: url('../img/buttons/bang.png');
-    filter: hue-rotate(270deg);
+    background-image: var(--bang);
+    filter: var(--flt-hue);
 }
-.flag {background-image: url('../img/buttons/flag.png');}
-.flagwrong {background-image: url('../img/buttons/wrong_flag.png');}
+.flag {background-image: var(--flag);}
+.flagwrong {background-image: var(--flag-wrong);}
 .debugging {filter: sepia(1);}
+.debugging:hover {    
+    filter: var(--flt-bright);
+    filter: var(--flt-hue);
+    filter: invert(0.25);
+}
+
 
 .control {
     margin-top: 0.75rem;
@@ -245,9 +273,7 @@ header .logo {
     cursor: pointer;
 }
 
-.btn-style:hover, .control:hover {background-color: lime;}
-
-.debugging:hover {filter: hue-rotate(270deg);}
+.btn-style:hover, .control:hover {background-color: var(--hover-color);}
 
 .hidden {display: none;}
 

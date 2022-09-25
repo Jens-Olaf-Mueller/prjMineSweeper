@@ -15,6 +15,8 @@
         <script src="./js/timer.class.js"></script>
         <script src="./js/board.class.js"></script>
         <script src="./js/field.class.js"></script>
+        <script src="./js/library.js"></script>
+        <script defer src="./js/settings.js"></script>        
         <script defer src="./js/main.js"></script>        
     </head>
 
@@ -31,7 +33,7 @@
                         <div id="divStatus">
                             <!-- <p id="txtCountDown" class="time">00:00</p> -->
                             <div class="icon-flag">
-                                <img src="./img/icons/Flag.png">
+                                <img id="imgFlag" src="./img/icons/Flag.png">
                                 <p id="txtFlags" class="tooltip" data-tooltip="You can set and remove flags by right click.">0</p>
                             </div>                            
                             <p id="txtTimer" class="time">00:00</p>
@@ -42,28 +44,44 @@
                     <div id="divButtonSettings" class="control btn-style">Settings</div>
 
                     <div id="divWiper" class="slide-out">  
-                        <div class="control tooltip" data-tooltip="There are 4 different boards: easy (9 x 9), medium (16 x 16), hard (16 x 30), insane (24 x 30)">
+
+                        <div class="control tooltip" data-tooltip="Choose your favourite theme.">
+                            <label for="inpTheme" class="small">Theme</label>
+                            <div class="unit">
+                                <input id="inpTheme" class="slider large" type="range" min="0" max="2" value="1">
+                                <label id="lblTheme">Green</label> 
+                            </div>                        
+                        </div>
+
+                        <div class="control tooltip" data-tooltip="There are 5 different boards: easy (9 x 9), medium (16 x 16), hard (16 x 30), insane (24 x 30), wtf (24 x 48)">
                             <label for="inpLevel" class="small">Level</label>
                             <div class="unit">
-                                <input id="inpLevel" class="slider large" type="range" min="0" max="3" value="0">
+                                <input id="inpLevel" class="slider large" type="range" min="0" max="4" value="0">
                                 <label id="lblLevel">easy</label>
                             </div>                         
-                        </div>                      
-                        <div class="control tooltip" data-tooltip="Starts a countdown with each click. When the set time has expired, the game is lost. If no countdown is set, a normal clock starts.">
+                        </div>                         
+                        <div class="control tooltip" data-tooltip="Create and play your own levels!">
+                            <label for="inpEditor">Editor</label>
+                            <div class="unit">
+                                <input id="inpEditor" class="slider switch" type="range" min="0" max="1" value="0">
+                                <label id="lblEditor">off</label> 
+                            </div>                        
+                        </div>
+                        <div class="control tooltip menu" data-tooltip="Starts a countdown with each click. When the set time has expired, the game is lost. If no countdown is set, a normal clock starts.">
                             <label for="inpCountdown">Countdown</label>
                             <div class="unit">
                                 <input id="inpCountdown" class="slider switch" type="range" min="0" max="60" step="10" value="0">
-                                <label id="lblCountdown">off</label> 
+                                <label id="lblCountdown">off</label>
                             </div>                        
                         </div>    
-                        <div class="control">
+                        <div class="control menu">
                             <label for="inpSound">Sound</label>
                             <div class="unit">
                                 <input id="inpSound" class="slider switch" type="range" min="0" max="1" value="1">
                                 <label id="lblSound">on</label> 
                             </div>                        
                         </div>
-                        <div class="control">
+                        <div class="control menu">
                             <label for="inpDebugger">Debugmode</label>
                             <div class="unit">
                                 <input id="inpDebugger" class="slider switch" type="range" min="0" max="1" value="0">

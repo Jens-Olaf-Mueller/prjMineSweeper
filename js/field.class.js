@@ -26,8 +26,12 @@ class Field {
         this.ID = `fld-${this.index}`;
         this.htmlElement = this.#addElement('div', {id: `${this.ID}`, class: 'field', "data-index": `${this.index}`});
         // this.htmlElement.innerText = this.index; // for debugging only...
-        this.#setLeftClickEvents();
-        this.#setRightClickEvents();
+        if (this.parentBoard.editMode) {
+            this.#setEditorClickEvents();
+        } else {
+            this.#setLeftClickEvents();
+            this.#setRightClickEvents(); 
+        }               
     }
 
 
@@ -97,5 +101,16 @@ class Field {
                 }              
             });
         }
+    }
+
+    #setEditorClickEvents() {
+        this.htmlElement.addEventListener('click', () => {
+            if (this.parentBoard.flagsRemaining || this.hasBomb) {
+                this.hasBomb = !this.hasBomb;
+                this.revealed = this.hasBomb;
+                this.parentBoard.flagsRemaining += (this.hasBomb) ? -1 : 1;
+                document.dispatchEvent(new Event('edit'));
+            }
+        });
     }
 }
